@@ -80,6 +80,11 @@ async function loadPageModule(page) {
       await initSettings();
       break;
     }
+   case "challenge": {
+      const { initChallenge } = await import("./modules/challenge.js");
+      await initChallenge();
+      break;
+    }
     default:
       console.warn("[DagoOS] Unknown page:", page);
   }
