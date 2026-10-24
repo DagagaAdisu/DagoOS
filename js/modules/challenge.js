@@ -285,10 +285,43 @@ function buildGrid(c) {
 
 function buildTodayEditor(c) {
   const today = todayISO();
-  const existing = state.days.find(d => d.date === today);
-  const statuses = existing?.statuses || {};
+  const startDate = c.startDate;
+  const endDateISO = endDate(c);
 
   const wrap = el("div", { class: "challenge-today" });
+
+  // Before the challenge starts
+  if (today < startDate) {
+    const daysUntil = Math.round(
+      (new Date(startDate) - new Date(today)) / (1000 * 60 * 60 * 24)
+    );
+    wrap.appendChild(
+      el("div", { class: "challenge-today__notice" },
+        el("div", { class: "challenge-today__notice-title",
+          text: "Challenge hasn't started yet" }),
+        el("div", { class: "challenge-today__notice-text",
+          text: `Starts ${formatDate(startDate)} — that's ${daysUntil === 1 ? "tomorrow" : `in ${daysUntil} days`}.` })
+      )
+    );
+    return wrap;
+  }
+
+  // After the challenge ends
+  if (today > endDateISO) {
+    wrap.appendChild(
+      el("div", { class: "challenge-today__notice" },
+        el("div", { class: "challenge-today__notice-title",
+          text: "Challenge ended" }),
+        el("div", { class: "challenge-today__notice-text",
+          text: `Ended ${formatDate(endDateISO)}. Close the challenge to see your final accuracy.` })
+      )
+    );
+    return wrap;
+  }
+
+  // Inside the challenge — normal editor
+  const existing = state.days.find(d => d.date === today);
+  const statuses = existing?.statuses || {};
 
   for (const task of c.tasks) {
     const current = statuses[task] || null;
@@ -328,7 +361,6 @@ function buildTodayEditor(c) {
 
   return wrap;
 }
-
 
 function scorePercent(score) {
   return `${Math.round(score * 100)}%`;
