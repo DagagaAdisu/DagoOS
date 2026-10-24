@@ -195,7 +195,7 @@ function renderDetail() {
 
   refs.detail.appendChild(
     el("div", { class: "challenge-stats" },
-      buildStat("Accuracy", `${stats.accuracy}%`),
+      buildStat("Accuracy", stats.daysElapsed > 0 ? `${stats.accuracy}%` : "—"),
       buildStat("Days elapsed", `${stats.daysElapsed} / ${stats.totalDays}`),
       buildStat("Current streak", `${streak}`),
       buildStat("Longest streak", `${longest}`)
